@@ -1,0 +1,146 @@
+call plug#begin('~/.vim/plugged')
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'airblade/vim-gitgutter'
+Plug 'itchyny/lightline.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'preservim/nerdtree'
+Plug 'preservim/tagbar'
+Plug 'puremourning/vimspector'
+Plug 'sbdchd/neoformat'
+Plug 'tomasiser/vim-code-dark'
+Plug 'tpope/vim-fugitive'
+call plug#end()
+
+silent! colorscheme codedark
+
+set completeopt=menuone,preview
+set cursorline
+set diffopt+=vertical
+set expandtab
+set hidden
+set hlsearch
+set ignorecase
+set incsearch
+set laststatus=2
+set mouse=a
+set nobackup
+set noshowmode
+set nowrap
+set nowritebackup
+set number
+set scrolloff=4
+set shiftwidth=4
+set showcmd
+set sidescrolloff=4
+set signcolumn=yes
+set spell
+set switchbuf+=usetab,newtab
+set tabstop=4
+set termguicolors
+set ttymouse=xterm2
+set updatetime=500
+set wildmenu
+set wildmode=longest:list
+
+filetype plugin indent on
+
+let g:mapleader=" "
+let g:localleader=","
+let g:markdown_fenced_languages=['javascript', 'json=javascript', 'bash=sh', 'go', 'python']
+highlight! link SignColumn LineNr
+highlight clear CursorLine
+highlight CursorLine cterm=underline gui=underline
+
+autocmd BufWritePre * silent Neoformat
+
+nnoremap <bs> :
+nnoremap <silent> <s-tab> :tabp<cr>
+nnoremap <silent> <tab> :tabn<cr>
+nnoremap <silent> ]q :cnext<cr>
+nnoremap <silent> [q :cprev<cr>
+
+" Lightline config
+let g:lightline = {
+	\ 'active': {
+	\ 	'left': [ [ 'mode', 'paste' ],
+	\		[ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+	\	},
+	\ 'component_function': {
+	\ 	'gitbranch': 'FugitiveHead'
+	\	},
+	\ }
+
+" CoC config
+silent! set tagfunc=CocTagFunc
+
+nnoremap <silent> <leader>jd :call CocActionAsync('jumpDefinition')<cr>
+nnoremap <silent> <leader>jr :call CocActionAsync('jumpReferences')<cr>
+nnoremap <silent> <leader>rn :call CocActionAsync('rename')<cr>
+nnoremap <silent> <leader>t :CocOutline<cr>
+nnoremap <silent> ]d :call CocActionAsync('diagnosticNext')<cr>
+nnoremap <silent> [d :call CocActionAsync('diagnosticPrevious')<cr>
+
+nnoremap <silent> <c-q> :call CocActionAsync('doHover')<cr>
+nnoremap <silent> K :call CocActionAsync('doHover')<cr>
+nnoremap <silent> D :PreviewDefinition<cr>
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+function! s:preview_definition() abort
+    let l:wincount = winnr("$")
+    pclose
+    if l:wincount != winnr("$")
+        return
+    endif
+    let l:file = expand("%:p")
+    let l:line = line(".") - 1
+    let l:character = col(".") - 1
+    try
+        let l:req = {"textDocument":{"uri":"file://".l:file},"position":{"line":l:line,"character":l:character}}
+        let l:resp = CocRequest('go', 'textDocument/definition', l:req)
+        if type(l:resp) == v:t_list
+            " Response like
+            " [{'uri': 'file:///path/to/file', 'range': {'end': {'character': 1, 'line': 1}, 'start': {'character': 1, 'line': 1}}}]
+            let l:file = l:resp[0].uri[7:]
+            let l:line = l:resp[0].range.start.line + 1
+            execute "pedit +".l:line." ".l:file
+        endif
+    catch
+        echom "Error: ".v:exception
+    endtry
+endfunction
+command! -nargs=0 PreviewDefinition :call s:preview_definition()
+
+
+" Tagbar config
+nnoremap <silent> T :TagbarToggle<cr>
+
+" FZF config
+nnoremap <silent> <leader>o :FZF<cr>
+
+" Neoformat config
+nnoremap <silent> F :Neoformat<cr>
+
+" NERDTree config
+nnoremap <silent> N :NERDTreeToggle<cr>
+
+" Vimspector config
+let g:vimspector_enable_mappings="HUMAN"
+"F3         Stop debugging.
+"F4         Restart debugging with the same configuration.
+"F5         When debugging, continue. Otherwise start debugging.
+"F6         Pause debuggee.
+"<leader>F9 Toggle conditional line breakpoint on the current line.
+"F8         Add a function breakpoint for the expression under cursor
+"<leader>F8 Run to Cursor
+"F9         Toggle line breakpoint on the current line.
+"F10        Step Over
+"F11        Step Into
+"F12        Step out of current function scope
+
+" GitGutter config
+let g:gitgutter_set_sign_backgrounds=1
+
+nnoremap <silent> ]g :GitGutterNextHunk<cr>
+nnoremap <silent> [g :GitGutterPrevHunk<cr>
+

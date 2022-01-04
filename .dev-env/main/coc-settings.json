@@ -1,0 +1,16 @@
+{
+    "coc": {
+        "preferences": {
+            "useQuickfixForLocations": true,
+            "jumpCommand": "tab drop"
+        }
+    },
+    "languageserver": {
+        "go": {
+            "command": "gopls",
+            "rootPatterns": ["go.mod"],
+            "trace.server": "verbose",
+            "filetypes": ["go"]
+        }
+    }
+}

@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <title>FindRSS</title>
+        <style>
+            #url {
+                width: 85%;
+            }
+            body {
+                background-color: black;
+                color: #d1d1d1;
+            }
+            input {
+                background-color: #d1d1d1;
+            }
+            a {
+                color: lightblue;
+            }
+        </style>
+        <script>
+            function onLoad() {
+                const btn = document.querySelector('#submit');
+                btn.addEventListener('click', submit);
+            }
+            function submit() {
+                const form = document.getElementById('form');
+                const url = document.getElementById('url');
+                const request = new XMLHttpRequest();
+                const output = document.getElementById('output');
+                output.innerHTML = "Loading...";
+                request.addEventListener('load', function(event) {
+                    output.innerHTML = event.target.responseText;
+                })
+                request.addEventListener('error', function(event) {
+                    output.innerHTML = event.target.responseText;
+                })
+                request.open('POST', '/find');
+                request.send(url.value);
+            }
+        </script>
+    </head>
+    <body onload="onLoad()">
+        <form id="form" onsubmit="return false;">
+            <p>
+                <label for="url">URL:</label>
+                <input name="url" id="url" type="text"></input>
+                <input name="submit" id="submit" type="button" value="Submit"></input>
+            </p>
+        </form>
+        <div id="output">
+        </div>
+    </body>
+</html>

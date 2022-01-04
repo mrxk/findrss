@@ -1,0 +1,19 @@
+source /etc/profile
+
+alias l="ls -F"
+alias ll="ls -AFl"
+
+alias gd="git diff"
+alias gds="git diff --stat=99999"
+alias gl="git log --graph --pretty=format:'%Cred%h%Creset - %C(bold blue)%an>%Creset%C(yellow)%d%Creset %s %Cgreen(%cr) %Creset' --abbrev-commit"
+alias gll="git log --name-status"
+alias gls="git log --oneline --name-status"
+alias gs="git status -s"
+
+
+if [ "${TMUX}" != "" ]
+then
+    export $(tmux show-environment PATH)
+fi
+
+export ENV=~/.profile
